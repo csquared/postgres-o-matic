@@ -1,16 +1,13 @@
 require 'bundler'
 Bundler.require
-require 'sinatra/base'
-require 'heroku/nav'
 
+ENV.use(SmartEnv::UriProxy)
 STDOUT.sync = true
+DB   = Sequel.connect ENV['DATABASE_URL'].to_s
+@@uuid = UUID.new
 
 class App < Sinatra::Base
   use Rack::Session::Cookie, secret: ENV['SSO_SALT']
-
-  @@resources = []
-
-  Resource = Class.new(OpenStruct)
 
   helpers do
     def protected!
@@ -39,10 +36,6 @@ class App < Sinatra::Base
 
     def json_body
       @json_body || (body = request.body.read && JSON.parse(body))
-    end
-
-    def get_resource
-      @@resources.find {|u| u.id == params[:id].to_i } or halt 404, 'resource not found'
     end
   end
   
