@@ -4,7 +4,18 @@
   %body
     = Heroku::Nav::Provider.html
     %p Hello!
-    %p You are using resource #{@resource.id}.
-    %p You are on plan #{@resource.plan}
+    %p You are using database #{@resource[:id]}.
+    %p with username #{@resource[:username]}
+    %p and password  #{@resource[:password]}
+    %p on host #{ENV['DATABASE_URL'].host}
+
+    - if @tables.size > 0
+      %p You have the following tables:
+      %ul
+      - @tables.each do |table|
+        %li=table
+    - else
+      %p You have no tables
+
     %p You logged in with email #{@email}
     
