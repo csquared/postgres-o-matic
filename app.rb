@@ -119,8 +119,7 @@ class App < Sinatra::Base
   put '/heroku/resources/:id' do
     show_request
     protected!
-    resource = get_resource 
-    resource.plan = json_body['plan']
+    DB[:resources].filter(:id => params[:id]).update(:plan => json_body['plan'])
     "ok"
   end
 end
