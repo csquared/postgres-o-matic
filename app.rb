@@ -84,10 +84,22 @@ class App < Sinatra::Base
     show_request
     protected!
     status 201
-    resource = Resource.new(:id => @@resources.size + 1, 
-                            :plan => json_body.fetch('plan', 'test'))
-    @@resources << resource
-    {id: resource.id, config: {"MYADDON_URL" => 'http://user.yourapp.com'}}.to_json
+    username = "user_" + SecureRandom.hex(10)
+    password = SecureRandom.hex(10)
+    dbname   = "db_"   + @@uuid.generate.gsub(/-/,'_') 
+
+    DB << "CREATE DATABASE #{dbname}"
+    DB << "CREATE USER #{username} WITH PASSWORD '#{password}'"
+    DB << "GRANT ALL ON DATABASE #{dbname} TO #{username}"
+
+    DB[:resources].insert(:id => dbname, :username => username, 
+                          :password => password, :plan => json_body['plan'], :status => "active")
+
+    db_url = "postgres://#{username}:#{password}@#{ENV['DATABASE_URL'].host}/#{dbname}"
+
+    STDOUT.puts "database url: #{db_url}"
+
+    {id: dbname, config: {"MYADDON_URL" => db_url}}.to_json
   end
 
   # deprovision
