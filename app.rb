@@ -106,8 +106,13 @@ class App < Sinatra::Base
   delete '/heroku/resources/:id' do
     show_request
     protected!
-    @@resources.delete(get_resource)
-    "ok"
+    begin
+      DB << "DROP DATABASE #{params[:id]}"
+      DB[:resources].filter(:id => params[:id]).update(:status => "inactive")
+      "ok"
+    rescue Sequel::DatabaseError
+      halt 404
+    end
   end
 
   # plan change
