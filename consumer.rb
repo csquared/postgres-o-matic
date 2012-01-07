@@ -12,6 +12,9 @@ DB = Sequel.connect ENV["MYADDON_URL"].to_s
   end
 end
 
+
+# ruby kung foo to see the sso page for the demo
 id = ENV['MYADDON_URL'].split("/").reverse.first
 fork { exec "kensa sso #{id}" }
+# wait till i'm done...
 gets
