@@ -44,8 +44,12 @@ class App < Sinatra::Base
     halt 403, 'not logged in' unless session[:heroku_sso]
     #response.set_cookie('heroku-nav-data', value: session[:heroku_sso])
     @resource = DB[:resources].filter(:id => session[:resource]).first
+    halt 404 if @resource[:status] == 'inactive'
     @tables = []
-    Sequel.postgres(@resource[:id], :host => ENV['DATABASE_URL'].host, :user => @resource[:username], :password => @resource[:password]) do |db|
+    Sequel.postgres(@resource[:id], 
+                    :host => ENV['DATABASE_URL'].host, 
+                    :user => @resource[:username], 
+                    :password => @resource[:password]) do |db|
       @tables = db.tables
     end
     @email    = session[:email]
