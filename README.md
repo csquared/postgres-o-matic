@@ -16,3 +16,11 @@ It is for demonstration purposes only and not meant to be a production system.
 ## Connect to a database
 
     $ add DATABASE_URL to .env file
+
+## Make a new postgres !
+
+    $ kensa test provision
+
+## Make some tables and sign in
+
+    $ kensa run ./consumer.rb
